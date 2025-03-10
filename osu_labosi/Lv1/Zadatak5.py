@@ -13,7 +13,7 @@ ham = []
 
 with open("Lv1/SMSSPamCollection.txt", encoding="utf8") as f:
 
-    lines = [line.strip() for line in f.readlines()]  #strip svaku liniju koju pročita
+    lines = [line.strip() for line in f.readlines()] 
 
     for line in lines:
         if line.startswith("spam"):
