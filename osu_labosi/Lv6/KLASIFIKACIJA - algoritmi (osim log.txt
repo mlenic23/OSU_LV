@@ -1,0 +1,102 @@
+KLASIFIKACIJA - algoritmi (osim logističke regresije)
+
+ALGORITAM K NAJBLIŽH SUSJEDA (KNN)
+- može se primjeniti i na regresijske i na klasifikacijske probleme
+- predikcija se određuje izravno na temelju skupa za učenje
+- primjer se klasificira na temelju njemu najbližih K susjeda
+- potrebno odrediti K
+
+- skaliranje podatka prije rada sa KNN algoritmom
+
+from sklearn.neighbors import KNeighborsClassifier
+
+KNN_model = KNeighborsClassifier(n_neighbors = 5)
+KNN_model.fit(X_train_n, y_train)
+
+y_test_p_KNN = KNN_model.predict(X_test)
+
+STROJEVI S POTPORNIM VEKTORIMA (SVM)
+- može se primjeniti i na regresijske i na klasifikacijske probleme
+- maksimizacija margine između podataka, najviše udaljena od primjera iz obje klase
+- potporni vektori su podaci koji su najbliže toj margini
+- parametar C koji kontrolira utjecaj pogrešne klasifikacije (veća vrijednost veći problem)
+- nelinearna granica odluke -> kernel funkcije (RBF), gama 
+
+from sklearn import svm
+from sklearn.svm import SVC
+
+SVM_model = svm.SVC(kernel='rbf', gamma=1, C=0.1)
+SVM_model.fit(X_train_n, y_train)
+
+y_test_p_SVM = SVM_model.predict(X_test)
+
+
+-> skup podataka za validaciju
+
+k-struka unakrsna validacija - skup podataka za učenje se dijeli u k podskupova, pri čemu se k-1 podskupova koristi za učenje modela, a jedan podskup za validaciju modela, procedura se ponavlja k puta te se dobiva k modela s pripadnom procjenom pogreške na temelju koje se računa prosječna pogreška
+
+metoda unakrsne validacije:
+from sklearn.model_selection import cross_val_score
+
+model = svm.SVC(kernel='linear', C=1, random_state=42)
+scores = cross_val_score(model, X_train, y_train, cv=5)
+print(scores)
+
+k-struka unakrsna validacija:
+from sklearn.pipeline import Pipeline
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import GridSearchCV
+
+pipe = make_pipeline(StandardScaler(), SVC()) //da ne moramo svaki korak zasebno raditi
+
+param_grid = {'svc__C': [10,100,100], 
+              'svc__gamma': [0.1, 1, 0.01]}
+
+svm_gscv = GridSearchCV(pipe, param_grid, cv=5, scoring='accuracy', n_jobs=-1)
+svm_gscv.fit(X_train, y_train)
+
+print(svm_gscv.best_params_)
+print(svm_gscv.best_score_)
+print(svm_gscv.cv_results_)
+
+
+MALO POJAŠNJENJA ZA SVE:
+
+- prvo je potrebno očistiti dataset da nema duplih i null vrijednosti
+- zatim je potrebno podjeliti na train i test ulaz izlaz podatke
+- ako imamo ulaze ili izlaze koji su kategoričke vrijednosti potrebno je koristiti
+  OneHotEncoder, trening podaci idu fit_transform i unutra stavljamo samo kategoričke 
+  isto i za test ali ide samo transform
+
+X_train_encoded = ohe.fit_transform(X_train[['Sex', 'Embarked']]).toarray()
+X_test_encoded = ohe.transform(X_test[['Sex', 'Embarked']]).toarray()
+
+- nakon toga potrebno je skalirati numeričke podatke
+- sve isto kao kategoričke samo uzimamo numeričke podatke, ako su svi numerički onda
+  nije potrebno točno pisati koji se koriste nego samo predati X_train, X_test
+
+X_train_encoded = ohe.fit_transform(X_train[['Sex', 'Embarked']]).toarray()
+X_test_encoded = ohe.transform(X_test[['Sex', 'Embarked']]).toarray()
+
+- ako imamo i kategoričke i numeričke potrebno ih je spojiti, inače ne treba
+
+X_train_processed = np.hstack([X_train_numeric, X_train_encoded])
+X_test_processed = np.hstack([X_test_numeric, X_test_encoded])
+
+- kada smo uredili sve podatke potrebno je napraviti model
+
+-fit - trenira model i njemu je potrebno predati uređene ulazne podatke i izlazne koje    
+       očekujemo od treniranja, jer y nije potrebno skalirati niti dirati
+
+- kada to završimo onda ide testiranje s metodom .predict, to možemo radti i na train i 
+  na test zavisno šta zadatak traži ali ugl na test. Predajemo samo ulaze za testiranje
+  a on će onda predpostavljati izlaze
+- kod računanja točnosti.. potrebno je usporediti očekivani y sa onim predictanim
+
+
+Ponekad se traži granica odluke - njoj je potrebno predati, ulazne podakte za učenje koji
+su uređeni i skalirani te izlazne podatke y_train te model koji koristimo classifier
+
+
+
+
