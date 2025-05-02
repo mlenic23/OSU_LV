@@ -1,0 +1,44 @@
+NENADZIRANO UČENJE - cilj je izvući zaključke o raspoloživim podatkovnim primjerima
+                     bez odgovarajuće izlazne veličine ili oznake
+
+GRUPIRANJE (CLUSTER) - postupak kojim se podatkovni primjeri grupiraju u grupe na način da
+                       su slični podatkovni primjeri u istoj grupi, a različiti u različitim
+
+
+ALGORITAM K SREDNJIH VRIJEDNOSTI
+
+- particioniranje podatkovnog skupa na K grupa
+- svaka grupa ima svoj centar, svaki podatkovni primjer pripada samo jednoj grupi
+- kriterijska funkcija po kojoj se odlučuje kojoj grupi pripada (minimizacija)
+- korisnik specificira broj centara odnosno broj grupa K
+- najprije pridružimo podatkovni primjer centru a zatim se ažurira taj centar 
+
+odabir broja centara:
+
+- nasumični odabir K vrijednosti
+- k-means++ - nasumično odabire prvi centar, a zatim svaki sljedeći centar odabire tako da 
+  je što dalje od postojećih centara
+
+
+odabir parametra k:
+- lakat metoda
+
+inertias = []
+
+for k in range(1, 11):
+    kmeans = KMeans(n_clusters=k, random_state=0)
+    kmeans.fit(X)
+    inertias.append(kmeans.inertia_)
+
+plt.plot(range(1, 11), inertias, marker='o')
+plt.title('Lakat metoda')
+plt.xlabel('Broj klastera (k)')
+plt.ylabel('Inertnost (Unutar-klasterska suma kvadrata)')
+plt.show()
+
+
+from sklearn.cluster import KMeans
+
+km = KMeans(n_clusters=3, init="random", n_init=5, random_state=0)
+km.fit(X) - pokretanje grupiranja primjera
+labels = km.predict(X) - dodjeljivanje grupe svakom primjeru
