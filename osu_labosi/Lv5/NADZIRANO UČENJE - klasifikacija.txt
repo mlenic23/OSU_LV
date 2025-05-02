@@ -1,0 +1,64 @@
+NADZIRANO UČENJE
+
+KLASIFIKACIJA - slučaj kada je izlazna veličina y diskretna ili nebrojčana veličina
+
+BINARNA KLASIFIKACIJA - ako izlazna veličina ima samo dvije moguće vrijednosti (0,1)
+-> VIŠEKLASNA KLASIFIKACIJA
+
+LOGISTIČKA REGRESIJA - predviđa vjerojatnost da nešto pripada klasi, ako je p (vjerojatnost) veća od 0.5 podatak pripada toj klasi
+
+
+VREDNOVANJE KLASIFIKACIJSKIH MODELA:
+
+-matrica zabune:
+TP (true positive) - pozitivni primjer kojeg je klasifikator klasificirao kao pozitivan primjer
+
+TN (true negative) - negativni primjer kojeg je klasifikator klasificirao kao negativan primjer
+
+FP (false positive) - negativan primjer kojeg je klasifikator klasificirao kao pozitivan primjer
+
+FN (false negative) - pozitivan primjer kojeg je klasifikator klasificirao kao negativan primjer
+
+1 - pozitivan primjer  0 - negativan primjer
+
+TOCNOST (accuracy) - udio točno klasificiranih primjera TP+TN / TP+TN+FP+FN
+
+PRECIZNOST (precision) - udio točno klasificiranih primjera u skupu koje model klasificira kao pozitivne primjere TP / TP+FP
+
+ODZIV (recall) - udio točno klasificiranih primjera u skupu pozitivnih primjera 
+TP / TP+FN
+
+F1 mjera (F1-score) - kombinacija preciznosti i odziva 2*preciznost*odziv/preciznost+odziv
+
+Model logističke regresije:
+
+from sklearn.linear_model import LogisticRegression
+
+LogRegression_model = LogisticRegression()
+LogRegression_model.fit(X_train, y_train)
+
+y_test_p = LogRegression_model.predict(X_test)
+
+Vrednovanje:
+
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+accuracy_score(y_test, y_pred)
+precision_score(y_test, y_pred)
+recall_score(y_test, y_pred)
+f1_score(y_test, y_pred)
+
+Matrica zabune:
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+cm = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix(y_test, y_pred))
+disp.plot()
+plt.show()
+
+Report:
+classification_report(y_true, y_pred) -> detaljna analiza performansi
+
+
+
