@@ -1,0 +1,92 @@
+UMJETNE NEURONSKE MREŽE
+-----------------------
+
+- neuron ima n ulaznih veličina i izlaznu veličinu a koja predstavlja aktivaciju
+- aktivacija se dobiva na način da se svaka ulazna veličina pomnoži odgovarajućom težinom
+  te se na sumu dodaje vrijednost pomaka b, na tu vrijednost se primjenjuje aktivacijska
+  funkcija
+
+UNAPRIJEDNA VIŠESLOJNA NEUREONSKA MREŽA
+- propagacija signala u jednom smjeru, od ulaza prema izlazu, bez povratnih veza
+potpuno povezani sloj: slojevi se nižu jedan iza drugoga pri čemu je svaki neuron sloja
+povezan sa svim neuronima prethodnog sloja
+
+- ulazni sloj, skriveni sloj, izlazni sloj
+
+- izlazni sloj se konstruira tako da je broj izlaznih neurona jednak broju klasa K
+- podatkovni primjeri se kodiraju na način da se izlazna vrijednost kodira pomoću 1-od-K
+  kodiranja
+- u izlaznom sloju se koristi softmax aktivacijska funkcija koja skalira izlaze mreže
+  tako da je njihova vrijednost u intervalu [0,1] i suma jednaka 1
+
+gubitak kategoričke unakrsne entropije -> iznos pogreške načinjene na jednom primjeru
+
+minibatch -> metoda koja u svakoj iteraciji za podešavanje parametara koristi jedan manji 
+             dio podataka za učenje. Jedna epoha je iskorištenje svih podatkovnih primjera iz
+             skupa za učenje
+
+
+from tensorflow import keras
+from tensorflow.keras import layers
+
+model = keras.Sequential()
+model.add(layers.Input(shape=(2,))) -> ulazni sloj, dimenzije ulaza
+model.add(layers.Danse(3, activation="relu")) -> kreira povezani sloj, broj neurona i 
+                                                 aktivacijska funkcija
+
+model.summary() -> ispis koji sadrži informacije o kreiranom modelu
+
+Treniranje:
+
+model.compile(loss="categorical_crossentropy", 
+              optimizer = "adam"
+              metrics = ["accurancy",])       -> konfigurira model za proces učenja
+
+batch_size = 32   -> veličina minibatcha
+epochs = 20       -> broj epoha
+
+history = model.fit(X_train,
+                 y_train, batch_size = batch_size,
+                 epochs = epochs
+                 validation_split = 0.1)           -> pokreće proces treniranja na skupu za
+                                                      učenje
+
+predictions = model.predict(X_test)                -> izračunava predikcije mreže za ulazne 
+                                                      podatke
+
+score = model.evaluate(X_test, y_test, verbose=0)  -> vrijednosti prosječne vrijednosti funkcija gubitka i odabranih metrika za dane testne podatke
+
+from keras.models import load_model
+
+model.save("FCN/")  -> model se iz radne memorije može pohraniti na trajnu pomoću .save
+del model
+
+model = load_model("FCN/")  -> ponovno učitavanje modela u radnu memoriju
+model.summary()
+
+
+BITNO: pip install tensorflow
+
+(x_train, y_train), (x_test, y_test) = keras.datasets.mnis.load_data() - učitaj MNIST
+
+x_train = x_train / 255.0  
+y_test  = x_test  / 255.0  -> skaliranje vrijednosti na 0-1, za slike ako je potrebno
+
+model = keras.Sequential([
+layers.Flatten(input_shape=(28,28)),  - pretvara sliku u 1D vektor
+layers.Dense(128, activation='relu'),
+layers.Dense(10, activation='softmax')])  -> definiranje modela
+
+model.compile(
+optimizer = "adam",
+loss = "sparse_categorical_crossentropy",
+metrics=['accuracy'])
+
+model.fit(x_train, y_train, epochs=5)
+
+predictions = model.predict(x_test)  -> prediktanje na testnim podacima
+
+test_loss, test_accuracy = model.evaluate(x_test, y_test)
+
+
+

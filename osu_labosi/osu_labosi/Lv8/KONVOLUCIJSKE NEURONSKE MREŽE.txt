@@ -1,0 +1,58 @@
+KONVOLUCIJSKE NEURONSKE MREŽE
+-----------------------------
+
+- vrsta dubokih neuronskih mreža koje se koriste za rješavanje problema u području 
+  računalnog vida (klasifikacija slika)
+
+slojevi:
+
+1. konvolucijski sloj
+-> osnovna operacija je 2D konvolucija. Izvodi se pomicanjem filtra po lokacijama u ulaznom
+   volumenu, množenjem filtra i preklapajućeg dijela ulaznog volumena po elementima, te
+   zbrajanjem rezultata da bi se dobila mapa značajki koja predstavlja odgovor filtra na ulaz
+-> visina i širina novog dobivenog volumena ovisi koristi li se padding ulaznog volumena ili  
+   ne. U slučaju nadopunjavanja izlazni volumen ima jednaku visinu i širinu kao ulazni 
+   volumen
+
+2. aktivacijski sloj
+-> primjenjuje se na svaki element mape značajki koju proizvodi konvolucijski sloj.
+   Aktivacijska funkcija koristi se za uvođenje nelinearnosti u mrežu kako bi mreža mogla
+   aproksimirati složene uzorke i reprezentacije podataka
+
+
+3. sloj za sažimanje podataka
+-> vrši sažimanje po maksimalnoj vrijednosti (max pooling), sloj za smanjenje prostorne
+   veličine mape značajki. Ideja je odabir max vrijednosti iz skupa elemenata te se koristi
+   kao reprezentativna vrijednost za tu regiju
+
+4. potpuno povezani sloj
+
+flatten -> transformiranje u 1D vektor
+
+dropout -> nasumično isključivanje određenog postotka neurona nekog sloja tijekom učenja
+rano zaustavljanje -> potrebno je pratiti performanse mreže na validacijskom skupu podataka
+                      zaustavljanje procesa kada odgovarajuća metrika prestane poboljšsavati
+
+from tensorflow import keras
+from tensorflow.keras import layers
+
+model = keras.Sequential()
+--input i dense isto kao kod obične neuronske mreže
+model.add(layers.Conv2(10, (3,3), activation="relu")) - broj filtera, dimenzija i 
+                                                        aktivacija
+model.add(layers.MaxPooling2D((2,2))   - vrijednost veličine prozora za sažimanje
+model.add(layers.Flatten())
+model.add(layers.Dropout(0.3))  - decimalna vrijednost za postotak isključivanja
+
+funkcija povratnog poziva -> prosljeđuje se drugim funkcijama koje ih izvršavaju u određenom trenutku
+
+metoda .fit ima argument callbacks u kojeg se predaju funkcije povratnog poziva
+
+my_callbacks = [
+keras.callbacks.EarlyStopping(monitor="val_loss",  - metrika koja se prati
+                              patience = 12,       - broj epoha nakon kojeg se zaustavi
+                              verbose = 1),
+keras.callbacks.TensorBoard(log_dir = 'logs/cnn_3', - putanja do direktorija
+                            update_freq = 100)]     - frekvencija zapisivanja u dir
+
+tensorboard -> vizualizacija informacija tijekom učenja	
