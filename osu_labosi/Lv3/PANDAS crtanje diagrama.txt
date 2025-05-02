@@ -1,0 +1,39 @@
+PANDAS crtanje diagrama
+-----------------------
+-> možemo napraviti dataframe ili možemo direktno u graf staviti liste za x i y
+data.plot(kind="vrsta", x="ime_x", y="ime_y")
+
+1) LINE PLOT
+
+data.plot(kind="line", x="datum", y="vrijednost")
+
+npr. napravimo dataframe:
+
+data = {'dan': [], 'temperatura':[]}
+df = pd.DataFrame(data)
+
+df.plot(kind="line", x="dan", y="temperatura")
+
+
+2) STUPČASTI DIJAGRAM (BAR)
+
+df.plot(kind="bar", x="kategorija", y="vrijednost", color=[])
+
+
+3) RASPRŠENI DIJAGRAM (SCATTER)
+
+df.plot(kind="scatter", x="x_varijabla", y="y_varijabla", color="")
+
+ili
+
+data.plot.scatter(x="", y="", z="")
+
+
+4) HISTOGRAM
+
+df.plot(kind="hist", y='numericka_varijabla', bins = 10)
+
+
+5) BOX
+
+df.plot(kind="box", y="numericka_varijabla")
