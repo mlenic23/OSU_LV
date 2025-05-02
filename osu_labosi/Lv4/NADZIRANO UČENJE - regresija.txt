@@ -1,0 +1,94 @@
+NADZIRANO UČENJE -> cilj je odrediti ovisnost između ulaznih veličina i izlazne veličine na 
+                    temleju podatkovnih primjera. Skup podataka sadrži parove x i y.
+
+- cilj je naučiti odnos izlaza i ulaza za podatke na kojima se uči kako bi kasnije mogli
+  uspješno predvidjeti izlaze za nove podatke koji se nalaze u skupu za testiranje
+
+REGRESIJSKI PROBLEM -> kada je izlazna veličina y kontinuirana veličina odnosno iz skupa
+                       realnih brojeva. Želimo predvidjeti stvarne brojeve. 
+                       Cilj je odrediti
+                       model koji može precizno procijeniti vrijednosti izlazne varijable y 
+                       za nove, nepoznate primjere.
+
+MODEL -> funkcija s konačnim brojem parametara
+
+POSTUPAK UČENJA -> određivanje nepoznatih parametara na temelju raspoloživih podataka
+
+-> da bi smo optimizirali model, moramo definirati funkciju pogreške, koja se koristi za
+   procjenu kvalitete modela. Najčešće je to funkcija kvadratne pogreške
+
+-> podaci se dijele na podatke za učenje i podatke za testiranje
+
+Skaliranje ulaznih veličina:
+
+min-max -> skalira ulazne veličine na željeni raspon, najčešće [0,1]
+standardizacija -> podaci za svaku ulaznu veličinu imaju srednju vrijednost 0 i varijancu 1
+
+vrednovanje modela:
+
+1. MSE -> srednja kvadratna pogreška
+2. RMSE -> korijen iz srednje kvadratne pogreške
+3. MAE -> srednja apsolutna pogreška
+4. MAPE -> srednja apsolutna postotna pogreška
+5. R^2 -> koeficijent determinacije, koliko je varijanca obuhvaćeno modelom
+
+Podjela skupa na train i test:
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 1)
+
+X,y - podaci koje učitamo iz nekog dataseta (ulazne, izlazne veličine koje su nam potrebne)
+test_size - veličina testnog skupa, ostatak ulazi u onaj za učenje (ugl učenje uvijek 80)
+random_state - odredimo broj kako bi svaki puta dobili iste podatke, znači da nije baš    
+               uvijek skroz random i svaki puta drugačije
+
+Kada moramo izvaditi podatke iz csv:
+
+X = wine.drop("quality", axis=1)  -> ulazni su svi osim quality jer je on izlazna
+y = wine['quality']
+
+Skaliranje učitanih podataka prije rada s njima:
+
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+sc = MinMaxScaler()  ili  StandardScaler()
+X_train_n = sc.fit_transform(X_train) -> metoda koja prvo filtrira (izračuna) parametre skaliranja na skupu podatka za učenje i zatim te parametre koristi za transformaciju podataka
+X_test_n = sc.transform(X_test) -> koristi već izračunate parametre skaliranja i primjenjuje ih na skup podataka za testiranje, znači nemamo fit dio jer se ne računaju novi parametri
+
+Kodiranje kategoričkih veličina:
+
+from sklearn.preprocessing import OneHotEncoder
+
+ohe = OneHotEncoder()
+x_encoded = ohe.fit_transform(data[['Fuel Type']]).toarray()
+
+
+Linearni regresijski model:
+
+import sklearn.linear_model as lm
+
+linearModel = lm.LinearRegression()
+linearModel.fit(X_train_n, y_train) -> potrebno je koristiti skalirane ulazne podatke,
+metoda fit prvo pronalazi parametre koji predstavljaju koeficijente, to su fi 0,1,2,3...
+Koristi se neki oblik optimizacije kako bi se pronašle optimalne vrijednosti tih parametara
+koji minimiziraju pogrešku između stvarnih vrijednosti i predviđenih vrijednosti modela, kada
+se završi fit taj model je naučio odnos između ulaznih značajki i ciljane varijable, te je spreman za testiranje na novih podacima.
+
+
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_absolute_percentage_error
+
+y_test_p = linearModel.predict(X_test_n) -> predikacija izlaznih veličina na skupu podataka za testiranje
+
+MAE = mean_absolute_error(y_test, y_test_p) -> da vidimo kolika je pogreška našeg modela
+MAPE = mean_absolute_percentage_error(y_test, predictedValues) * 100
+MSE = mean_squared_error
+R2  = r2_score
+
+Ispis parametara modela:
+
+linearModel.coef_  -> vektor koeficijenata
+linearModel.intercept_ -> presjecište modela s y-osi, kada je u 0
+
+plt.scatter(y_test, predictedValues) -> da usporedimo prave vrijednosti i predpostavljeno
+
